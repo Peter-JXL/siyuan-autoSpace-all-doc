@@ -1,4 +1,4 @@
-// 优化思源笔记所有文档的标题的排版（在中文和英文、数字之间加空格）
+// 优化思源笔记所有文档的标题排版（在中文和英文、数字之间加空格）
 
 const axios = require('axios');
 const fs = require('fs');
@@ -6,9 +6,7 @@ const path = require('path');
 
 // --- 配置项 ---
 const BASE_URL = 'http://127.0.0.1:6806';
-// !!! 请替换为你的思源笔记 API Token !!!
-// 获取方法：思源设置 -> 关于 -> API Token
-const AUTH_TOKEN = 'Token 0b7hbsfmjp1cf99f'; 
+const AUTH_TOKEN = 'xxxxxx';  // !!! 请替换为你的思源笔记 API Token !!!  获取方法：思源设置 -> 关于 -> API Token
 
 const LOG_DIR = 'logs'; // 日志文件夹名称
 const LOG_FILE = path.join(__dirname, LOG_DIR, `app_log_${Date.now()}.log`); // 日志文件路径
@@ -53,13 +51,13 @@ async function postRequest(endpoint, data = {}, customHeaders = {}) {
     }
 }
 
-// --- 辅助函数：递归提取所有文档ID ---
+// --- 辅助函数：递归提取所有文档 ID ---
 // 这个函数现在接收一个节点或节点数组
 function extractDocIds(nodes, idList) {
     const nodesToProcess = Array.isArray(nodes) ? nodes : [nodes];
 
     for (const node of nodesToProcess) {
-        if (node && node.id) { // 只要有 id 字段，就认为是文档ID
+        if (node && node.id) { // 只要有 id 字段，就认为是文档 ID
             idList.push(node.id);
         }
 
@@ -78,12 +76,12 @@ function optimizeTitle(title) {
 
     let newTitle = title;
 
-    // 规则1: 中文与英文/数字之间添加空格
-    // 例如: "从0到10000粉丝的心得分" -> "从 0 到 10000 粉丝的心得分"
-    newTitle = newTitle.replace(/([\u4e00-\u9fa5])([a-zA-Z0-9])/g, '$1 $2');
-    newTitle = newTitle.replace(/([a-zA-Z0-9])([\u4e00-\u9fa5])/g, '$1 $2');
+    // 规则 1: 中文与英文/数字之间添加空格
+    // 例如: "从 0 到 10000 粉丝的心得分" -> "从 0 到 10000 粉丝的心得分"
+    newTitle = newTitle.replace(/([\u 4 e 00-\u 9 fa 5])([a-zA-Z 0-9])/g, '$1 $2');
+    newTitle = newTitle.replace(/([a-zA-Z 0-9])([\u 4 e 00-\u 9 fa 5])/g, '$1 $2');
 
-    // 规则2: 去除多余的空格，只保留一个
+    // 规则 2: 去除多余的空格，只保留一个
     newTitle = newTitle.replace(/\s+/g, ' ').trim();
 
     return newTitle;
@@ -114,7 +112,7 @@ async function main() {
 
         log(`找到 ${notebooks.length} 个笔记本。`);
 
-        // 2. 遍历每个笔记本，获取文档树并提取文档ID
+        // 2. 遍历每个笔记本，获取文档树并提取文档 ID
         for (const notebook of notebooks) {
             log(`\n--- 2. 处理笔记本: ${notebook.name} (ID: ${notebook.id}) ---`);
             try {
@@ -128,7 +126,7 @@ async function main() {
                     const currentNotebookDocIds = [];
                     extractDocIds(docTree, currentNotebookDocIds); 
                     currentNotebookDocIds.forEach(id => allDocumentIds.add(id));
-                    log(`笔记本 "${notebook.name}" 中找到 ${currentNotebookDocIds.length} 篇文档ID。`);
+                    log(`笔记本 "${notebook.name}" 中找到 ${currentNotebookDocIds.length} 篇文档 ID。`);
                 } else {
                     log(`笔记本 "${notebook.name}" 没有找到文档树数据或为空。`);
                 }
@@ -137,16 +135,16 @@ async function main() {
             }
         }
 
-        log(`\n--- 3. 所有文档ID收集完毕 ---`);
+        log(`\n--- 3. 所有文档 ID 收集完毕 ---`);
         const uniqueDocIds = Array.from(allDocumentIds);
-        log(`总共收集到 ${uniqueDocIds.length} 个唯一文档ID。`);
+        log(`总共收集到 ${uniqueDocIds.length} 个唯一文档 ID。`);
 
         if (uniqueDocIds.length === 0) {
-            log('没有文档ID需要处理。');
+            log('没有文档 ID 需要处理。');
             return;
         }
 
-        // 4. 遍历每个文档ID，获取详细信息并存储
+        // 4. 遍历每个文档 ID，获取详细信息并存储
         log('\n--- 4. 获取每个文档的详细信息 ---');
         let requestCount = 0;
         for (const docId of uniqueDocIds) {
@@ -159,12 +157,12 @@ async function main() {
                         path: docData.path,
                         rootTitle: docData.rootTitle
                     });
-                    log(`获取文档ID: ${docId} 的信息成功。标题: "${docData.rootTitle}"`);
+                    log(`获取文档 ID: ${docId} 的信息成功。标题: "${docData.rootTitle}"`);
                 } else {
-                    log(`文档ID: ${docId} 的信息不完整，跳过。`, 'WARN');
+                    log(`文档 ID: ${docId} 的信息不完整，跳过。`, 'WARN');
                 }
             } catch (error) {
-                log(`获取文档ID: ${docId} 的信息失败，跳过。`, 'ERROR');
+                log(`获取文档 ID: ${docId} 的信息失败，跳过。`, 'ERROR');
             }
 
             requestCount++;
@@ -185,7 +183,7 @@ async function main() {
             const optimizedTitle = optimizeTitle(originalTitle);
 
             if (originalTitle !== optimizedTitle) {
-                log(`\n文档ID: ${docId}`);
+                log(`\n 文档 ID: ${docId}`);
                 log(`  原标题: "${originalTitle}"`);
                 log(`  新标题: "${optimizedTitle}"`);
 
@@ -195,13 +193,13 @@ async function main() {
                         path: details.path,
                         title: optimizedTitle
                     });
-                    log(`  文档ID: ${docId} 重命名成功。`);
+                    log(`  文档 ID: ${docId} 重命名成功。`);
                     renameCount++;
                 } catch (error) {
-                    log(`  文档ID: ${docId} 重命名失败。`, 'ERROR');
+                    log(`  文档 ID: ${docId} 重命名失败。`, 'ERROR');
                 }
             } else {
-                log(`文档ID: ${docId} 标题无需优化: "${originalTitle}"`);
+                log(`文档 ID: ${docId} 标题无需优化: "${originalTitle}"`);
             }
 
             requestCount++;
