@@ -36,7 +36,7 @@
 - 排版优化
 - ......
 
-具体可以看思源官方的文档：[siyuan/API (opens new window)](https://github.com/siyuan-note/siyuan/blob/master/API_zh_CN.md)。
+具体可以看思源官方的文档：[siyuan/API](https://github.com/siyuan-note/siyuan/blob/master/API_zh_CN.md)。
 
 
 
@@ -131,3 +131,8 @@ Token：
 
 可以在控制台和日志文件（位于 `logs` 目录下）里确认执行情况。
 
+2025-10-21 更新：添加了思源笔记所有文档标题的排版优化，运行方法：
+
+```
+ node index2.js
+```
