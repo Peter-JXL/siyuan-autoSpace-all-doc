@@ -1,4 +1,4 @@
-// index.js
+// 优化思源笔记所有文档的排版（在中文和英文、数字之间加空格）
 
 const axios = require('axios');
 const fs = require('fs');
